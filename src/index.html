@@ -8,8 +8,8 @@
 <body>
     <label for="audioInput">Select Audio Input Device:</label>
     <select id="audioInput"></select>
-    <button onclick="startRecording()">녹화 시작</button>
-    <button onclick="stopRecording()">녹화 종료</button>
+    <button id="startRecordButton" onclick="startRecording()">녹화 시작</button>
+    <button id="stopRecordButton" onclick="stopRecording()">녹화 종료</button>
     <button id="downloadButton" style="display: none;" onclick="downloadRecording()">Download Recording</button>
     <video id="preview" controls style="display: none;"></video>
     <script src="record.js"></script>

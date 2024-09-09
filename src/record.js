@@ -6,6 +6,9 @@ async function updateAudioInputDevices() {
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const audioInputSelect = document.getElementById('audioInput');
+        const stopRecordButton = document.getElementById('stopRecordButton');
+        stopRecordButton.disabled = true;
+
         audioInputSelect.innerHTML = '';
         const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
         
@@ -35,7 +38,8 @@ async function getMediaStreams() {
                 width: { ideal: 1920 },
                 height: { ideal: 1080 },
                 frameRate: { ideal: 60 },
-            }
+            },
+            audio: true
         });
 
         const audioStream = await navigator.mediaDevices.getUserMedia({
@@ -74,6 +78,11 @@ async function startRecording() {
         mimeType: 'video/webm;codecs=vp9' 
     });
 
+    const startRecordButton = document.getElementById('startRecordButton');
+    const stopRecordButton = document.getElementById('stopRecordButton');
+        startRecordButton.disabled = true;
+        stopRecordButton.disabled = false;
+
     mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
             recordedChunks.push(event.data);
@@ -91,6 +100,8 @@ async function startRecording() {
         const downloadButton = document.getElementById('downloadButton');
         downloadButton.href = url;
         downloadButton.style.display = 'block';
+        startRecordButton.disabled = false;
+        stopRecordButton.disabled = true;
     };
     mediaRecorder.start();
 }
