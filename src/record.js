@@ -1,3 +1,6 @@
+
+let stream
+
 async function getMediaStreams() {
     try {
 
@@ -35,7 +38,7 @@ let mediaRecorder
 let recordedChunks = [];
 
 async function startRecording() {
-    const stream = await getMediaStreams();
+    stream = await getMediaStreams();
 
     if (!stream) {
         console.error("스트림을 가져오지 못했습니다.");
@@ -61,6 +64,8 @@ async function startRecording() {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+
+        
     };
     mediaRecorder.start();
 }
@@ -69,4 +74,11 @@ function stopRecording() {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
     }
+
+    if(stream) {
+        stream.getTracks().forEach(track => track.stop());
+
+    }
+
+    stream = undefined
 }
