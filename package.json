@@ -1,0 +1,8 @@
+{
+  "name": "screen-record",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/type-huey/screen-record.git",
+  "author": "Sanghun Han <sanghun33@naver.com>",
+  "license": "MIT"
+}
