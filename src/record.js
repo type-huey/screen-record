@@ -1,8 +1,34 @@
+let stream;
+let mediaRecorder;
+let recordedChunks = [];
 
-let stream
+async function updateAudioInputDevices() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputSelect = document.getElementById('audioInput');
+        audioInputSelect.innerHTML = '';
+        const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+        
+        audioInputDevices.forEach(device => {
+            const option = document.createElement('option');
+            option.value = device.deviceId;
+            option.textContent = device.label || `Microphone ${device.deviceId}`;
+            audioInputSelect.appendChild(option);
+        });
+
+        if (audioInputDevices.length > 0) {
+            audioInputSelect.value = audioInputDevices[0].deviceId;
+        }
+    } catch (error) {
+        console.error('오디오 장치 목록을 가져오는 중 오류 발생:', error);
+    }
+}
 
 async function getMediaStreams() {
     try {
+
+        const audioInputSelect = document.getElementById('audioInput');
+        const selectedDeviceId = audioInputSelect.value;
 
         const displayStream = await navigator.mediaDevices.getDisplayMedia({
             video: {
@@ -14,6 +40,8 @@ async function getMediaStreams() {
 
         const audioStream = await navigator.mediaDevices.getUserMedia({
             audio: {
+                deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
+
                 sampleRate: { ideal: 48000 },
                 channelCount: { ideal: 2 },  
                 echoCancellation: false,     
@@ -33,9 +61,6 @@ async function getMediaStreams() {
         return undefined;
     }
 }
-
-let mediaRecorder
-let recordedChunks = [];
 
 async function startRecording() {
     stream = await getMediaStreams();
@@ -58,14 +83,14 @@ async function startRecording() {
     mediaRecorder.onstop = () => {
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'recording.webm';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
 
-        
+        const preview = document.getElementById('preview');
+        preview.src = url;
+        preview.style.display = 'block';
+
+        const downloadButton = document.getElementById('downloadButton');
+        downloadButton.href = url;
+        downloadButton.style.display = 'block';
     };
     mediaRecorder.start();
 }
@@ -79,6 +104,17 @@ function stopRecording() {
         stream.getTracks().forEach(track => track.stop());
 
     }
-
     stream = undefined
 }
+
+function downloadRecording() {
+    const downloadButton = document.getElementById('downloadButton');
+    const a = document.createElement('a');
+    a.href = downloadButton.href;
+    a.download = 'record.webm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+window.addEventListener('load', updateAudioInputDevices);
