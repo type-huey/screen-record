@@ -39,7 +39,7 @@ async function getMediaStreams() {
                 height: { ideal: 1080 },
                 frameRate: { ideal: 60 },
             },
-            audio: true
+            audio: true 
         });
 
         const audioStream = await navigator.mediaDevices.getUserMedia({
@@ -56,6 +56,7 @@ async function getMediaStreams() {
 
         const combinedStream = new MediaStream([
             ...displayStream.getVideoTracks(),
+            ...displayStream.getAudioTracks(),
             ...audioStream.getAudioTracks()
         ]);
 
