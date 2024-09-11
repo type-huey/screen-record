@@ -54,11 +54,18 @@ async function getMediaStreams() {
             }
         });
 
-        const combinedStream = new MediaStream([
-            ...displayStream.getVideoTracks(),
-            ...displayStream.getAudioTracks(),
-            ...audioStream.getAudioTracks()
-        ]);
+         const audioContext = new AudioContext();
+         const displayAudioSource = audioContext.createMediaStreamSource(displayStream);
+         const micAudioSource = audioContext.createMediaStreamSource(audioStream);
+         const destination = audioContext.createMediaStreamDestination();
+ 
+         displayAudioSource.connect(destination);
+         micAudioSource.connect(destination);
+ 
+         const combinedStream = new MediaStream([
+             ...displayStream.getVideoTracks(),
+             ...destination.stream.getAudioTracks()
+         ]);
 
         return combinedStream;
     } catch (err) {
